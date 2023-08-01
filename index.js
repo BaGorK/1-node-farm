@@ -35,7 +35,7 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8'); // exc
 const dataObj = JSON.parse(data); // This converts the json file to a javascript object
 
 const server = http.createServer((req, res) => {
-  const pathName = req.url;
+  const { query, pathname: pathName } = url.parse(req.url, true);
 
   // Overview page
   if (pathName === '/' || pathName === '/overview') {
@@ -50,8 +50,9 @@ const server = http.createServer((req, res) => {
     // Product page
   } else if (pathName === '/product') {
     res.writeHead(200, { 'Content-type': 'text/html' });
-
-    res.end(data);
+    const product = dataObj[query.id];
+    const output = replaceTemplate(tempProduct, product);
+    res.end(output);
     // API
   } else if (pathName === '/api') {
     res.writeHead(200, { 'Content-type': 'application/json' });
